@@ -4,6 +4,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import WebDriverException
 from time import sleep
 import numpy as np
 import pymsteams
@@ -231,7 +232,9 @@ def script(email, password, year, schoolwise, subject, teacher, teams):
         
             # Break loop.
             break
-        except:
+        except WebDriverException:
+            print("Failed on {} Feed".format(subject))
+        else:
             print("Failed on {} Feed".format(subject))
             driver.quit()
 
