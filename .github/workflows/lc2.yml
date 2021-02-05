@@ -2,7 +2,7 @@ name: LC2 Year Group
 
 on:
   schedule:
-    - cron:  '*/15 * * * *'
+    - cron:  '*/20 * * * *'
   workflow_dispatch:
     inputs:
         logLevel:
