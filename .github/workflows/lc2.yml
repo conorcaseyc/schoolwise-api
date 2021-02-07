@@ -1,0 +1,121 @@
+name: LC2 Year Group
+
+on:
+  schedule:
+    - cron:  '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+        logLevel:
+          description: 'Rationale'     
+          required: true
+          default: 'Ensure API is functioning correctly'
+        tags:
+          description: 'Tags'  
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install dependencies
+      run: |
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+        bash miniconda.sh -b -p $HOME/miniconda
+        source "$HOME/miniconda/etc/profile.d/conda.sh"
+        hash -r
+        conda config --set always_yes yes --set changeps1 no
+        conda update -q conda
+        conda info -a
+        export PATH="$HOME/miniconda/bin:$PATH"
+        which python
+        conda init
+        rm -rf miniconda.sh
+    - name: Post to MS Teams
+      env:
+        CCASEY: ${{ secrets.CCASEY }}
+        AROCHFORD: ${{ secrets.AROCHFORD }}
+        MCASEY: ${{ secrets.MCASEY}}
+        LC2_AG: ${{ secrets.LC2_AG }}
+        LC2_BIOLOGY: ${{ secrets.LC2_BIOLOGY }}
+        LC2_BUSINESS: ${{ secrets.LC2_BUSINESS }}
+        LC2_CONSTRUCTION: ${{ secrets.LC2_CONSTRUCTION }}
+        LC2_GEOGRAPHY: ${{ secrets.LC2_GEOGRAPHY }}
+        LC2_IRISH: ${{ secrets.LC2_IRISH }} 
+        LC2_IRISH_ROGERS: ${{ secrets.LC2_IRISH_ROGERS }}
+        LC2_LCVP: ${{ secrets.LC2_LCVP}} 
+        LC2_MATHS: ${{ secrets.LC2_MATHS}}
+        LC2_MATHS_FOLEY: ${{ secrets.LC2_MATHS_FOLEY }}
+        LC2_MUSIC: ${{ secrets.LC2_MUSIC }}
+        LC2_PHYSICS: ${{ secrets.LC2_PHYSICS}}
+      run: |
+        export PATH="$HOME/miniconda/bin:$PATH"
+        conda init
+
+        conda install selenium
+        conda install numpy
+
+        pip install pymsteams
+        pip install wget
+        pip install click
+
+        # Agricultural Science.
+        python get_feed.py --email=17mcasey@student.kenmarecs.com --password="$MCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject="Agricultural-Science" --teacher="Mr J O'Sullivan" --teams="$LC2_AG"
+
+        # Biology.
+        python get_feed.py --email=16ccasey@student.kenmarecs.com --password="$CCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject=Biology --teacher="Ms J O'Neill" --teams="$LC2_BIOLOGY"
+
+        # Business.
+        python get_feed.py --email=17arochford@student.kenmarecs.com --password="$AROCHFORD" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject=Business --teacher="Mr G Humston" --teams="$LC2_BUSINESS"
+
+        # Construction Studies.
+        python get_feed.py --email=17mcasey@student.kenmarecs.com --password="$MCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject=Construction --teacher="Mr N Donnelly" --teams="$LC2_CONSTRUCTION"
+
+        # Geography.
+        # Ms Costello
+        python get_feed.py --email=17mcasey@student.kenmarecs.com --password="$MCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject="Geography" --teacher="Ms J Costello" --teams="$LC2_GEOGRAPHY"
+
+        # Irish.
+        # Mr Rogers.
+        python get_assignment.py --email=17arochford@student.kenmarecs.com --password="$AROCHFORD" --year=LC2 --schoolwise=https://kenmarecs.myschoolwise.com/Curriculum/Irish/Groups-Activity/Group-Activity/Assignments/GroupId/3389 --subject="Irish-Rogers" --teacher="Mr R Rogers" --teams="$LC2_IRISH_ROGERS"
+        python get_feed.py --email=17arochford@student.kenmarecs.com --password="$AROCHFORD" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject="Irish-Rogers" --teacher="Mr R Rogers" --teams="$LC2_IRISH_ROGERS"
+
+        # Ms McCarthy.
+        python get_assignment.py --email=16ccasey@student.kenmarecs.com --password="$CCASEY" --year=LC2 --schoolwise=https://kenmarecs.myschoolwise.com/Curriculum/Irish/Groups-Activity/Group-Activity/Assignments/GroupId/3388 --subject=Irish --teacher="Ms H McCarthy" --teams="$LC2_IRISH"
+        python get_feed.py --email=16ccasey@student.kenmarecs.com --password="$CCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject=Irish --teacher="Ms H McCarthy" --teams="$LC2_IRISH"
+        
+        # LCVP.
+        python get_assignment.py --email=16ccasey@student.kenmarecs.com --password="$CCASEY" --year=LC2 --schoolwise=https://kenmarecs.myschoolwise.com/Curriculum/Enterprise-Education/Groups-Activity/Group-Activity/Assignments/GroupId/3386 --subject=LCVP --teacher="Ms D Prendergast" --teams="$LC2_LCVP"
+        python get_feed.py --email=16ccasey@student.kenmarecs.com --password="$CCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject=LCVP --teacher="Ms D Prendergast" --teams="$LC2_LCVP"
+
+        # Mathematics.
+        # Ms Foley.
+        python get_assignment.py --email=17mcasey@student.kenmarecs.com --password="$MCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/Curriculum/Mathematics/Groups-Activity/Group-Activity/Assignments/GroupId/3392" --subject="Mathematics-Foley" --teacher="Ms G Foley" --teams="$LC2_MATHS_FOLEY"
+        python get_feed.py --email=17mcasey@student.kenmarecs.com --password="$MCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject="Mathematics-Foley" --teacher="Ms G Foley" --teams="$LC2_MATHS_FOLEY"
+
+        # Ms Kelleher.
+        python get_feed.py --email=16ccasey@student.kenmarecs.com --password="$CCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject=Mathematics --teacher="Ms G O'Sullivan Kelleher" --teams="$LC2_MATHS"
+
+        # Music.
+        python get_assignment.py --email=16ccasey@student.kenmarecs.com --password="$CCASEY" --year=LC2 --schoolwise=https://kenmarecs.myschoolwise.com/Curriculum/Music/Groups-Activity/Group-Activity/Assignments/GroupId/3382 --subject=Music --teacher="Ms V Whitehead" --teams="$LC2_MUSIC"
+        python get_feed.py --email=16ccasey@student.kenmarecs.com --password="$CCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject=Music --teacher="Ms V Whitehead" --teams="$LC2_MUSIC"
+
+        # Physics.
+        python get_assignment.py --email=16ccasey@student.kenmarecs.com --password="$CCASEY" --year=LC2 --schoolwise=https://kenmarecs.myschoolwise.com/Curriculum/Physics/Groups-Activity/Group-Activity/Assignments/GroupId/3383 --subject=Physics --teacher="Mr J O'Sullivan" --teams="$LC2_PHYSICS"
+        python get_feed.py --email=16ccasey@student.kenmarecs.com --password="$CCASEY" --year=LC2 --schoolwise="https://kenmarecs.myschoolwise.com/#" --subject=Physics --teacher="Mr J O'Sullivan" --teams="$LC2_PHYSICS"
+    - name: Commit data
+      run: |
+        git config --global user.email "16ccasey@student.kenmarecs.com"
+        git config --global user.name "schoolwise-api"
+        git add .
+        if [ -n "$(git status --porcelain)" ]; then
+          git commit -m "LC2 Teams Group Updated";
+        else
+          echo "SchoolWise feed has not been updated.";
+        fi
+    - name: GitHub Push
+      uses: ad-m/github-push-action@v0.6.0
+      with:
+        github_token: ${{ secrets.PASSWORD }}
+        branch: main
